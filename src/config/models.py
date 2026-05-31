@@ -52,7 +52,7 @@ class ModelConfig:
     priority: int = 0  # 优先级，数字越小优先级越高
     enabled: bool = True  # 是否启用
     cost_per_1k_tokens: float = 0.0  # 每1k tokens成本（用于成本优化）
-    base_url: Optional[str] = None  # 自定义API端点（用于vLLM等）
+    base_url: Optional[str] = None  # 自定义API端点
 
 
 @dataclass
