@@ -16,6 +16,7 @@ Two-tier agent workflow system with ClaudeCode (orchestration) and Codex (execut
 
 - **Two-tier architecture**: Claude Opus for planning/review, GPT-5.5/DeepSeek for execution
 - **Automatic failover**: Switches to DeepSeek v4 Pro when GPT-5.5 is unavailable
+- **Skills system**: Extensible domain-specific task execution (code analysis, data processing, etc.)
 - **Long-running support**: Designed for 12+ hour continuous operation
 - **Multi-dimensional completion**: Smart stopping with correctness, completeness, quality metrics
 - **Flexible model configuration**: Permissions, priorities, and automatic fallback chains
@@ -111,6 +112,7 @@ python -m src.main list-models
 
 - [docs/COMPLETION_MECHANISM.md](docs/COMPLETION_MECHANISM.md) - Completion evaluation system
 - [docs/MODEL_CONFIGURATION.md](docs/MODEL_CONFIGURATION.md) - Model configuration guide
+- [docs/SKILLS_SYSTEM.md](docs/SKILLS_SYSTEM.md) - Skills system for extensible execution
 
 ## Testing
 

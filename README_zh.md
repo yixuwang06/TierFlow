@@ -16,6 +16,7 @@
 
 - **双层架构**: Claude Opus负责规划/评审，GPT-5.5/DeepSeek负责执行
 - **自动容灾**: GPT-5.5不可用时自动切换到DeepSeek v4 Pro
+- **Skills系统**: 可扩展的领域特定任务执行（代码分析、数据处理等）
 - **长时间运行**: 支持12小时以上连续运行
 - **多维度完成评估**: 基于正确性、完整性、质量等指标的智能停止机制
 - **灵活的模型配置**: 权限控制、优先级和自动容灾链
@@ -111,6 +112,7 @@ python -m src.main list-models
 
 - [docs/COMPLETION_MECHANISM.md](docs/COMPLETION_MECHANISM.md) - 完成评估系统
 - [docs/MODEL_CONFIGURATION.md](docs/MODEL_CONFIGURATION.md) - 模型配置指南
+- [docs/SKILLS_SYSTEM.md](docs/SKILLS_SYSTEM.md) - 可扩展执行的Skills系统
 
 ## 测试
 
