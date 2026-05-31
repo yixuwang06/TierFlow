@@ -160,12 +160,12 @@ curl http://localhost:9090/metrics
 
 ```bash
 # 复制服务文件
-sudo cp deployment/scow-workflow.service /etc/systemd/system/
+sudo cp deployment/tierflow.service /etc/systemd/system/
 
 # 启用并启动
-sudo systemctl enable scow-workflow
-sudo systemctl start scow-workflow
-sudo systemctl status scow-workflow
+sudo systemctl enable tierflow
+sudo systemctl start tierflow
+sudo systemctl status tierflow
 ```
 
 ### 使用Docker

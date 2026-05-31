@@ -160,12 +160,12 @@ Key metrics:
 
 ```bash
 # Copy service file
-sudo cp deployment/scow-workflow.service /etc/systemd/system/
+sudo cp deployment/tierflow.service /etc/systemd/system/
 
 # Enable and start
-sudo systemctl enable scow-workflow
-sudo systemctl start scow-workflow
-sudo systemctl status scow-workflow
+sudo systemctl enable tierflow
+sudo systemctl start tierflow
+sudo systemctl status tierflow
 ```
 
 ### Using Docker
