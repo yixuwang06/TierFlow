@@ -1,4 +1,4 @@
-# AgentFlow
+# TierFlow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -32,7 +32,7 @@
 ```bash
 # 克隆仓库
 git clone <repository-url>
-cd agentflow
+cd tierflow
 
 # 创建虚拟环境
 python -m venv venv
@@ -172,21 +172,21 @@ sudo systemctl status scow-workflow
 
 ```bash
 # 构建镜像
-docker build -t agentflow .
+docker build -t tierflow .
 
 # 运行容器
-docker run -d --name agentflow \
+docker run -d --name tierflow \
   -e ANTHROPIC_API_KEY=your_key \
   -e OPENAI_API_KEY=your_key \
   -e DEEPSEEK_API_KEY=your_key \
   -p 9090:9090 \
-  agentflow
+  tierflow
 ```
 
 ## 项目结构
 
 ```
-agentflow/
+tierflow/
 ├── src/
 │   ├── api_clients/       # API客户端实现
 │   ├── orchestration/     # 编排层

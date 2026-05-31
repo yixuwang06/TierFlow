@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "scow-workflow"
+name = "tierflow"
 version = "0.1.0"
-description = "Two-tier agent workflow system with ClaudeCode and Codex"
+description = "Two-tier agent workflow system with skills support"
 requires-python = ">=3.10"
 dependencies = [
     "anthropic>=0.40.0",
@@ -34,7 +34,7 @@ dev = [
 ]
 
 [project.scripts]
-scow-workflow = "src.main:cli"
+tierflow = "src.main:cli"
 
 [tool.black]
 line-length = 100

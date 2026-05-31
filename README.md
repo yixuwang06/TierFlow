@@ -1,4 +1,4 @@
-# AgentFlow
+# TierFlow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -32,7 +32,7 @@ Two-tier agent workflow system with ClaudeCode (orchestration) and Codex (execut
 ```bash
 # Clone repository
 git clone <repository-url>
-cd agentflow
+cd tierflow
 
 # Create virtual environment
 python -m venv venv
@@ -172,21 +172,21 @@ sudo systemctl status scow-workflow
 
 ```bash
 # Build image
-docker build -t agentflow .
+docker build -t tierflow .
 
 # Run container
-docker run -d --name agentflow \
+docker run -d --name tierflow \
   -e ANTHROPIC_API_KEY=your_key \
   -e OPENAI_API_KEY=your_key \
   -e DEEPSEEK_API_KEY=your_key \
   -p 9090:9090 \
-  agentflow
+  tierflow
 ```
 
 ## Project Structure
 
 ```
-agentflow/
+tierflow/
 ├── src/
 │   ├── api_clients/       # API client implementations
 │   ├── orchestration/     # Orchestration layer
