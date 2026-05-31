@@ -1,4 +1,4 @@
-# SCOW Workflow
+# AgentFlow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -32,7 +32,7 @@
 ```bash
 # 克隆仓库
 git clone <repository-url>
-cd scow-workflow
+cd agentflow
 
 # 创建虚拟环境
 python -m venv venv
@@ -172,34 +172,32 @@ sudo systemctl status scow-workflow
 
 ```bash
 # 构建镜像
-docker build -t scow-workflow .
+docker build -t agentflow .
 
 # 运行容器
-docker run -d --name scow-workflow \
+docker run -d --name agentflow \
   -e ANTHROPIC_API_KEY=your_key \
   -e OPENAI_API_KEY=your_key \
   -e DEEPSEEK_API_KEY=your_key \
   -p 9090:9090 \
-  scow-workflow
+  agentflow
 ```
 
 ## 项目结构
 
 ```
-scow-workflow/
+agentflow/
 ├── src/
 │   ├── api_clients/       # API客户端实现
 │   ├── orchestration/     # 编排层
 │   ├── execution/         # 执行层
+│   ├── skills/           # Skills系统
 │   ├── state/            # 状态管理
 │   ├── monitoring/       # 健康监控
 │   ├── config/           # 配置
 │   └── utils/            # 工具函数
-├── tests/                # 测试套件
 ├── config/               # 配置文件
 ├── docs/                 # 文档
-├── scripts/              # 实用脚本
-├── CLAUDE.md             # 开发指南
 ├── LICENSE               # MIT协议
 └── README.md             # 本文件
 ```

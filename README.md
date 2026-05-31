@@ -1,4 +1,4 @@
-# SCOW Workflow
+# AgentFlow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -32,7 +32,7 @@ Two-tier agent workflow system with ClaudeCode (orchestration) and Codex (execut
 ```bash
 # Clone repository
 git clone <repository-url>
-cd scow-workflow
+cd agentflow
 
 # Create virtual environment
 python -m venv venv
@@ -172,34 +172,32 @@ sudo systemctl status scow-workflow
 
 ```bash
 # Build image
-docker build -t scow-workflow .
+docker build -t agentflow .
 
 # Run container
-docker run -d --name scow-workflow \
+docker run -d --name agentflow \
   -e ANTHROPIC_API_KEY=your_key \
   -e OPENAI_API_KEY=your_key \
   -e DEEPSEEK_API_KEY=your_key \
   -p 9090:9090 \
-  scow-workflow
+  agentflow
 ```
 
 ## Project Structure
 
 ```
-scow-workflow/
+agentflow/
 ├── src/
 │   ├── api_clients/       # API client implementations
 │   ├── orchestration/     # Orchestration layer
 │   ├── execution/         # Execution layer
+│   ├── skills/           # Skills system
 │   ├── state/            # State management
 │   ├── monitoring/       # Health monitoring
 │   ├── config/           # Configuration
 │   └── utils/            # Utilities
-├── tests/                # Test suite
 ├── config/               # Configuration files
 ├── docs/                 # Documentation
-├── scripts/              # Utility scripts
-├── CLAUDE.md             # Development guide
 ├── LICENSE               # MIT License
 └── README.md             # This file
 ```
