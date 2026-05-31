@@ -31,7 +31,7 @@
 
 ```bash
 # 克隆仓库
-git clone <repository-url>
+git clone git@github.com:yixuwang06/TierFlow.git
 cd tierflow
 
 # 创建虚拟环境

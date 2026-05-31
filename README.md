@@ -31,7 +31,7 @@ Two-tier agent workflow system with ClaudeCode (orchestration) and Codex (execut
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone git@github.com:yixuwang06/TierFlow.git
 cd tierflow
 
 # Create virtual environment
