@@ -1,0 +1,27 @@
+orchestration:
+  model: claude-opus-4-7
+  max_planning_tokens: 4000
+  review_enabled: true
+  evaluation_threshold: 0.8
+
+execution:
+  primary_model: gpt-5.5
+  fallback_model: deepseek-v4-pro
+  failover_timeout: 30
+  max_execution_tokens: 8000
+
+state:
+  checkpoint_interval: 5
+  backup_enabled: true
+  backup_interval: 3600
+
+monitoring:
+  metrics_enabled: true
+  metrics_port: 9090
+  health_check_enabled: true
+  alert_on_error_rate: 0.1
+
+rate_limiting:
+  enabled: true
+  strategy: token_bucket
+  burst_size: 10

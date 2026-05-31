@@ -1,0 +1,99 @@
+# Model Configuration
+
+# Define available models
+models:
+  - name: claude-opus-4-7
+    provider: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    permissions:
+      can_plan: true
+      can_execute: false
+      can_review: true
+      can_evaluate: true
+      max_tokens: 4000
+      rate_limit: 50
+    priority: 0
+    enabled: true
+    cost_per_1k_tokens: 0.015
+
+  - name: claude-sonnet-4-6
+    provider: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    permissions:
+      can_plan: true
+      can_execute: true
+      can_review: true
+      can_evaluate: true
+      max_tokens: 4000
+      rate_limit: 100
+    priority: 1
+    enabled: true
+    cost_per_1k_tokens: 0.003
+
+  - name: gpt-5.5
+    provider: openai
+    api_key_env: OPENAI_API_KEY
+    permissions:
+      can_plan: true
+      can_execute: true
+      can_review: true
+      can_evaluate: true
+      max_tokens: 8000
+      rate_limit: 100
+    priority: 0
+    enabled: true
+    cost_per_1k_tokens: 0.005
+
+  - name: deepseek-chat
+    provider: deepseek
+    api_key_env: DEEPSEEK_API_KEY
+    permissions:
+      can_plan: true
+      can_execute: true
+      can_review: true
+      can_evaluate: true
+      max_tokens: 8000
+      rate_limit: 60
+    priority: 1
+    enabled: true
+    cost_per_1k_tokens: 0.001
+
+# Configure roles with fallback chains
+roles:
+  - role: orchestrator
+    primary_model: claude-opus-4-7
+    fallback_models:
+      - claude-sonnet-4-6
+    auto_fallback: true
+    fallback_on_error: true
+    fallback_on_rate_limit: true
+    fallback_on_timeout: true
+
+  - role: executor
+    primary_model: gpt-5.5
+    fallback_models:
+      - deepseek-chat
+      - claude-sonnet-4-6
+    auto_fallback: true
+    fallback_on_error: true
+    fallback_on_rate_limit: true
+    fallback_on_timeout: true
+
+  - role: planner
+    primary_model: claude-opus-4-7
+    fallback_models:
+      - claude-sonnet-4-6
+    auto_fallback: true
+    fallback_on_error: true
+    fallback_on_rate_limit: true
+    fallback_on_timeout: true
+
+  - role: reviewer
+    primary_model: claude-opus-4-7
+    fallback_models:
+      - claude-sonnet-4-6
+      - gpt-5.5
+    auto_fallback: true
+    fallback_on_error: true
+    fallback_on_rate_limit: true
+    fallback_on_timeout: true
