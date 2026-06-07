@@ -1,0 +1,64 @@
+# Model Configuration — USTC llmproxy (OpenAI-compatible gateway)
+#
+# Upper layer (orchestration/planning/review): deepseek-v4-pro
+# Lower layer (execution): qwen3.6-reasoner
+# Both routed through https://llmproxy.cmet.ustc.edu.cn/v1
+#
+# Both are reasoning models: they emit reasoning_content and need a generous
+# max_tokens budget, otherwise the visible answer (content) can come back empty.
+
+models:
+  - name: deepseek-v4-pro
+    provider: openai
+    api_key_env: LLMPROXY_API_KEY
+    base_url: https://llmproxy.cmet.ustc.edu.cn/v1
+    permissions:
+      can_plan: true
+      can_execute: false
+      can_review: true
+      can_evaluate: true
+      max_tokens: 8000
+      rate_limit: 60
+    priority: 0
+    enabled: true
+    cost_per_1k_tokens: 0.0
+
+  - name: qwen3.6-reasoner
+    provider: openai
+    api_key_env: LLMPROXY_API_KEY
+    base_url: https://llmproxy.cmet.ustc.edu.cn/v1
+    permissions:
+      can_plan: true
+      can_execute: true
+      can_review: true
+      can_evaluate: true
+      max_tokens: 8000
+      rate_limit: 60
+    priority: 0
+    enabled: true
+    cost_per_1k_tokens: 0.0
+
+roles:
+  - role: orchestrator
+    primary_model: deepseek-v4-pro
+    fallback_models:
+      - qwen3.6-reasoner
+    auto_fallback: true
+
+  - role: planner
+    primary_model: deepseek-v4-pro
+    fallback_models:
+      - qwen3.6-reasoner
+    auto_fallback: true
+
+  - role: reviewer
+    primary_model: deepseek-v4-pro
+    fallback_models:
+      - qwen3.6-reasoner
+    auto_fallback: true
+
+  - role: executor
+    primary_model: qwen3.6-reasoner
+    fallback_models:
+      - deepseek-v4-pro
+    auto_fallback: true

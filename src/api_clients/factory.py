@@ -30,13 +30,18 @@ class UniversalAPIClient(BaseAPIClient):
 
         # 初始化对应的客户端
         if model_config.provider == ModelProvider.ANTHROPIC:
-            self.client = Anthropic(api_key=api_key)
+            anthropic_kwargs = {"api_key": api_key}
+            if model_config.base_url:
+                anthropic_kwargs["base_url"] = model_config.base_url
+            self.client = Anthropic(**anthropic_kwargs)
             self.provider_type = "anthropic"
-        elif model_config.provider == ModelProvider.OPENAI:
-            self.client = OpenAI(api_key=api_key)
+        elif model_config.provider in (ModelProvider.OPENAI, ModelProvider.CUSTOM):
+            base_url = model_config.base_url
+            self.client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
             self.provider_type = "openai"
         elif model_config.provider == ModelProvider.DEEPSEEK:
-            self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+            base_url = model_config.base_url or "https://api.deepseek.com"
+            self.client = OpenAI(api_key=api_key, base_url=base_url)
             self.provider_type = "openai"
         else:
             raise ValueError(f"Unsupported provider: {model_config.provider}")
@@ -81,7 +86,27 @@ class UniversalAPIClient(BaseAPIClient):
         if self.provider_type == "anthropic":
             return response.content[0].text
         else:
-            return response.choices[0].message.content
+            message = response.choices[0].message
+            content = message.content
+            if content:
+                return content
+            # Reasoning models (e.g. qwen3.6-reasoner) may return content=null
+            # with the answer in reasoning_content, especially when output is
+            # truncated by max_tokens. Fall back to reasoning_content.
+            reasoning = getattr(message, "reasoning_content", None)
+            if reasoning:
+                logger.warning(
+                    "empty_content_using_reasoning",
+                    model=self.model,
+                    finish_reason=response.choices[0].finish_reason,
+                )
+                return reasoning
+            logger.error(
+                "empty_response",
+                model=self.model,
+                finish_reason=response.choices[0].finish_reason,
+            )
+            return ""
 
 
 class ModelClientFactory:
@@ -143,6 +168,41 @@ class ModelClientFactory:
         except Exception as e:
             logger.error("client_creation_failed", model=model_name, error=str(e))
             return None
+
+    def generate_for_role(
+        self,
+        role: ModelRole,
+        prompt: str,
+        system: Optional[str] = None,
+        max_tokens: int = 4000,
+        temperature: float = 0.7,
+    ) -> str:
+        """Generate a response for a role, walking its fallback chain at call time.
+
+        Unlike resolving a single client at init, this retries the next model in
+        the role's chain when the upstream returns errors (e.g. the proxy's 503
+        "model temporarily unavailable"), giving every role real disaster recovery.
+        """
+        chain = self.model_config_manager.get_fallback_chain(role)
+        if not chain:
+            raise RuntimeError(f"No models configured for role {role}")
+
+        last_error: Optional[Exception] = None
+        for model_name in chain:
+            client = self.get_client_by_name(model_name)
+            if not client:
+                continue
+            try:
+                return client.generate(
+                    prompt, system=system, max_tokens=max_tokens, temperature=temperature
+                )
+            except Exception as e:
+                last_error = e
+                logger.warning("role_model_failed", role=role, model=model_name, error=str(e)[:200])
+                continue
+
+        logger.error("all_role_models_failed", role=role, chain=chain)
+        raise last_error or RuntimeError(f"All models failed for role {role}")
 
     def close_all(self):
         """Close all cached clients."""

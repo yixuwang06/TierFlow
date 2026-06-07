@@ -13,6 +13,31 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
+def _strip_code_fence(text: str) -> str:
+    """Strip a leading/trailing markdown code fence (```json ... ```) if present."""
+    t = text.strip()
+    if t.startswith("```"):
+        lines = t.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        t = "\n".join(lines).strip()
+    return t
+
+
+def _subtask_to_str(subtask) -> str:
+    """Coerce a subtask (string or dict) into a description string."""
+    if isinstance(subtask, str):
+        return subtask
+    if isinstance(subtask, dict):
+        for key in ("description", "task", "name", "subtask", "title"):
+            if subtask.get(key):
+                return str(subtask[key])
+        return str(subtask)
+    return str(subtask)
+
+
 class ConfigurableOrchestrator:
     """Orchestrator with flexible model configuration."""
 
@@ -198,13 +223,26 @@ Return a JSON structure with:
 
 Please decompose this into subtasks with clear dependencies."""
 
-        response = self.planner_client.generate(prompt, system=system_prompt, temperature=0.3)
+        try:
+            response = self.client_factory.generate_for_role(
+                ModelRole.PLANNER, prompt, system=system_prompt, temperature=0.3
+            )
+        except Exception as e:
+            logger.error("planning_failed", error=str(e)[:200])
+            return {"subtasks": [task_description], "dependencies": [], "estimated_complexity": 5}
 
         import json
         try:
-            return json.loads(response)
+            plan = json.loads(_strip_code_fence(response))
         except json.JSONDecodeError:
             return {"subtasks": [task_description], "dependencies": [], "estimated_complexity": 5}
+
+        # Reasoning models sometimes return subtasks as dicts ({"id", "description"})
+        # instead of plain strings. Normalize to strings so downstream (state DB,
+        # executor prompts) gets consistent input.
+        raw_subtasks = plan.get("subtasks") or [task_description]
+        plan["subtasks"] = [_subtask_to_str(s) for s in raw_subtasks]
+        return plan
 
     def _evaluate_completion(self, original_task: str, results: list) -> dict:
         """Evaluate completion using configured orchestrator."""
@@ -234,11 +272,17 @@ Completed subtasks:
 
 Evaluate the completion status with detailed metrics."""
 
-        response = self.orchestrator_client.generate(prompt, system=system_prompt, temperature=0.2)
+        try:
+            response = self.client_factory.generate_for_role(
+                ModelRole.ORCHESTRATOR, prompt, system=system_prompt, temperature=0.2
+            )
+        except Exception as e:
+            logger.error("evaluation_failed", error=str(e)[:200])
+            return {"complete": False, "score": 0.5, "next_steps": []}
 
         import json
         try:
-            result = json.loads(response)
+            result = json.loads(_strip_code_fence(response))
             result.setdefault("complete", False)
             result.setdefault("score", 0.5)
             result.setdefault("correctness_score", result["score"])
@@ -315,11 +359,17 @@ Result: {result}
 
 Please review this result."""
 
-        response = self.reviewer_client.generate(prompt, system=system_prompt, temperature=0.2)
+        try:
+            response = self.client_factory.generate_for_role(
+                ModelRole.REVIEWER, prompt, system=system_prompt, temperature=0.2
+            )
+        except Exception as e:
+            logger.error("review_failed", error=str(e)[:200])
+            return {"score": 0.7, "issues": [], "suggestions": []}
 
         import json
         try:
-            return json.loads(response)
+            return json.loads(_strip_code_fence(response))
         except json.JSONDecodeError:
             return {"score": 0.7, "issues": [], "suggestions": []}
 

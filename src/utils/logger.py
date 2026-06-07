@@ -6,11 +6,11 @@ from pathlib import Path
 
 import structlog
 
-from src.config.settings import settings
-
 
 def setup_logging():
     """Configure structured logging."""
+    from src.config.settings import settings
+
     log_file = Path(settings.log_file)
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
